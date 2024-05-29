@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Preference Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #category {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+    }
+    #start {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+    }
+    #start:hover {
+      background-color: #3e8e41;
+    }
+    #options {
+      margin-top: 20px;
+    }
+    #option1, #option2 {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+    }
+    #option1:hover, #option2:hover {
+      background-color: #3e8e41;
+    }
+    #result {
+      margin-top: 20px;
+    }
+    #ranking {
+      margin-top: 20px;
+    }
+    #ranking li {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Preference Game</h1>
+  <p>Choose a category:</p>
+  <select id="category">
+    <option value="movies">Movies</option>
+    <option value="videoGames">Video Games</option>
+    <option value="sports">Sports</option>
+    <option value="books">Books</option>
+    <option value="music">Music</option>
+  </select>
+  <button id="start">Start</button>
+  <p id="round"></p>
+  <p id="options"></p>
+  <button id="option1"></button>
+  <button id="option2"></button>
+  <p id="result"></p>
+  <ol id="ranking"></ol>
+
+  <script>
+    let datasets = {
+      movies: [
+        "The Shawshank Redemption",
+        "The Godfather",
+        "The Dark Knight",
+        "12 Angry Men",
+        "Schindler's List",
+        "The Lord of the Rings: The Return of the King",
+        "Pulp Fiction",
+        "The Good, the Bad and the Ugly",
+        "Forrest Gump",
+        "Inception"
+      ],
+      videoGames: [
+        "The Legend of Zelda: Ocarina of Time",
+        "Portal",
+        "Super Mario 64",
+        "Tetris",
+        "Final Fantasy VII",
+        "Resident Evil 4",
+        "GoldenEye 007",
+        "The Elder Scrolls V: Skyrim",
+        "Super Smash Bros. Melee",
+        "Minecraft"
+      ],
+      sports: [
+        "Football",
+        "Basketball",
+        "Baseball",
+        "Soccer",
+        "Tennis",
+        "Golf",
+        "Boxing",
+        "Hockey",
+        "Rugby",
+        "Cricket"
+      ],
+      books: [
+        "To Kill a Mockingbird",
+        "The Lord of the Rings",
+        "The Hunger Games",
+        "Pride and Prejudice",
+        "The Catcher in the Rye",
+        "1984",
+        "The Hitchhiker's Guide to the Galaxy",
+        "The Handmaid's Tale",
+        "The Lion, the Witch and the Wardrobe",
+        "Harry Potter and the Philosopher's Stone"
+      ],
+      music: [
+        "The Beatles",
+        "Michael Jackson",
+        "Led Zeppelin",
+        "Pink Floyd",
+        "Queen",
+        "The Rolling Stones",
+        "AC/DC",
+        "Guns N' Roses",
+        "Nirvana",
+        "The Who"
+      ]
+    };
+
+    let currentDataset;
+    let round = 1;
+    let ranking = [];
+
+    function getTwoRandomOptions() {
+      let option1 = currentDataset[Math.floor(Math.random() * currentDataset.length)];
+      let option2 = currentDataset[Math.floor(Math.random() * currentDataset.length)];
+
+      while (option1 === option2) {
+        option2 = currentDataset[Math.floor(Math.random() * currentDataset.length)];
+      }
+
+      return [option1, option2];
+    }
+
+    function displayRound() {
+      document.getElementById("round").textContent = `Round ${round}`;
+    }
+
+    function displayOptions(option1, option2) {
+      document.getElementById("options").textContent = `Which option do you prefer?`;
+      document.getElementById("option1").textContent = option1;
+      document.getElementById("option2").textContent = option2;
+    }
+
+    function displayResult(winner) {
+      document.getElementById("result").textContent = `The option you like the best is: ${winner}`;
+    }
+
+    function displayRanking() {
+      let rankingList = document.getElementById("ranking");
+      rankingList.innerHTML = "";
+
+      ranking.forEach((item, index) => {
+        let listItem = document.createElement("li");
+        listItem.textContent = `${index + 1}. ${item}`;
+        rankingList.appendChild(listItem);
+      });
+    }
+
+    function startGame() {
+      let category = document.getElementById("category").value;
+      currentDataset = datasets[category].slice();
+      ranking = [];
+
+      displayRound();
+
+      let [option1, option2] = getTwoRandomOptions();
+      displayOptions(option1, option2);
+
+      document.getElementById("option1").addEventListener("click", () => {
+        currentDataset = currentDataset.filter(option => option !== option2);
+        ranking.push(option2);
+        round++;
+
+        if (currentDataset.length > 1) {
+          displayRound();
+          [option1, option2] = getTwoRandomOptions();
+          displayOptions(option1, option2);
+        } else {
+          ranking.push(currentDataset[0]);
+          displayResult(currentDataset[0]);
+          displayRanking();
+        }
+      });
+
+      document.getElementById("option2").addEventListener("click", () => {
+        currentDataset = currentDataset.filter(option => option !== option1);
+        ranking.push(option1);
+        round++;
+
+        if (currentDataset.length > 1) {
+          displayRound();
+          [option1, option2] = getTwoRandomOptions();
+          displayOptions(option1, option2);
+        } else {
+          ranking.push(currentDataset[0]);
+          displayResult(currentDataset[0]);
+          displayRanking();
+        }
+      });
+    }
+
+    document.getElementById("start").addEventListener("click", startGame);
+  </script>
+</body>
+</html>
